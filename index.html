@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sonsuz aşkımızın hikayesi.">
+    <title>Birlikte Sonsuza | 14 Şubat</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,400&family=Montserrat:wght@200;400;500&family=Pinyon+Script&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- Değişkenler & Reset --- */
+        :root {
+            --bg-dark: #2b0505;
+            --primary: #800020;
+            --accent: #d4af37;
+            --text-light: #fdfbfb;
+            --text-muted: #eecaca;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            
+            --font-display: 'Cormorant Garamond', serif;
+            --font-body: 'Montserrat', sans-serif;
+            --font-script: 'Pinyon Script', cursive;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        html { scroll-behavior: smooth; }
+        
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            line-height: 1.8;
+        }
+
+        /* --- Scroll Bar --- */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+
+        /* --- Tipografi --- */
+        h1, h2, h3 { font-family: var(--font-display); font-weight: 300; letter-spacing: 1px; }
+        .script-font { font-family: var(--font-script); color: var(--accent); font-size: 2rem; }
+        
+        /* --- Loading Screen --- */
+        #preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-dark); z-index: 10000;
+            display: flex; justify-content: center; align-items: center;
+            flex-direction: column; transition: opacity 0.8s ease;
+        }
+        .loader-heart {
+            font-size: 4rem; color: var(--primary);
+            animation: pulse 1.5s infinite;
+            filter: drop-shadow(0 0 15px rgba(214, 52, 71, 0.6));
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+        }
+        
+        .hero-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://images.unsplash.com/photo-1518568814500-bf0f8d125f46?q=80&w=2500&auto=format&fit=crop') no-repeat center center/cover;
+            filter: brightness(0.4);
+            transform: scale(1.1);
+            transition: transform 10s ease;
+            z-index: -1;
+        }
+
+        .hero-content {
+            z-index: 2;
+            padding: 2rem;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: heroReveal 2s ease forwards 0.5s;
+        }
+
+        .hero h1 {
+            font-size: 5rem;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        /* --- Animasyonlar --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1s ease;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- Hikayemiz (Story) --- */
+        .story-section {
+            /* Padding alt değerini azalttık (100px -> 30px) */
+            padding: 100px 10% 30px 10%; 
+            background: linear-gradient(180deg, var(--bg-dark) 0%, #3e0a0a 100%);
+            position: relative;
+        }
+
+        .story-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .story-text {
+            padding: 40px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 2px;
+        }
+
+        .story-img img {
+            width: 100%;
+            border-radius: 2px;
+            box-shadow: 20px 20px 0px rgba(128, 0, 32, 0.2);
+            transition: transform 0.5s ease;
+        }
+
+        /* --- Galeri --- */
+        .gallery-section {
+            /* Padding üst değerini azalttık (100px -> 30px) */
+            padding: 30px 5% 100px 5%;
+            background-color: #3e0a0a;
+        }
+
+        .section-header { text-align: center; margin-bottom: 60px; }
+        .section-header h2 { font-size: 3rem; margin-bottom: 10px; color: var(--text-light); }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 40px; /* Gap'i biraz artırdım ki yazılar ferah dursun */
+        }
+
+        /* Kart Yapısı Değişti */
+        .gallery-item {
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* Resim ile yazı arası boşluk */
+        }
+
+        /* Resim Alanı */
+        .img-wrapper {
+            position: relative;
+            overflow: hidden;
+            height: 400px;
+            border-radius: 4px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .img-wrapper img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .img-wrapper:hover img { transform: scale(1.05); }
+
+        /* Yazı Alanı */
+        .gallery-caption {
+            text-align: center;
+            padding: 0 10px;
+        }
+        
+        .caption-title {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            color: var(--accent);
+            margin-bottom: 5px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        .caption-text {
+            font-size: 0.9rem;
+            color: #d1d1d1;
+            font-weight: 300;
+            margin-top: 8px;
+        }
+
+        /* --- Mesajlar --- */
+        .messages-section {
+            padding: 100px 10%;
+            background: url('https://www.transparenttextures.com/patterns/stardust.png'), linear-gradient(to right, #2b0505, #4a0e0e);
+        }
+
+        .message-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px;
+        }
+
+        .msg-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 40px; text-align: center; transition: transform 0.3s;
+        }
+        .msg-box:hover { transform: translateY(-10px); background: rgba(255, 255, 255, 0.06); }
+        .quote-icon { font-size: 2rem; color: var(--accent); margin-bottom: 20px; }
+
+        /* --- Footer --- */
+        footer {
+            padding: 80px 20px;
+            text-align: center; background: black;
+            position: relative; border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        footer h2 { font-size: 4rem; margin-bottom: 20px; color: var(--text-light); }
+        .heart-end { color: var(--primary); font-size: 2rem; animation: pulse 2s infinite; }
+
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        @keyframes heroReveal { to { opacity: 1; transform: translateY(0); } }
+
+        /* --- MÜZİK KUTUSU --- */
+        .music-player-container {
+            position: fixed; bottom: 30px; right: 30px; z-index: 1000;
+            display: flex; align-items: center;
+            background: rgba(43, 5, 5, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            cursor: pointer; transition: all 0.3s ease;
+            max-width: 250px;
+        }
+
+        .music-player-container:hover {
+            background: rgba(128, 0, 32, 0.9); transform: translateY(-3px); border-color: var(--accent);
+        }
+
+        .music-icon-wrapper {
+            width: 35px; height: 35px; background: var(--primary); border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            margin-right: 15px; border: 2px solid rgba(255,255,255,0.2); font-size: 0.9rem;
+        }
+
+        .music-info { display: flex; flex-direction: column; justify-content: center; }
+        .music-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 2px; }
+        .song-name { font-size: 0.9rem; font-weight: 500; color: white; white-space: nowrap; }
+        .music-player-container.playing .music-icon-wrapper { animation: spin 3s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Mobil Uyum */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 3rem; }
+            .story-container { grid-template-columns: 1fr; }
+            .img-wrapper { height: 300px; }
+            .music-player-container { bottom: 20px; right: 20px; padding: 8px 15px; }
+            .song-name { font-size: 0.8rem; }
+            /* Mobilde boşlukları daha da sıkılaştır */
+            .story-section { padding-bottom: 20px; }
+            .gallery-section { padding-top: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="preloader">
+        <i class="fas fa-heart loader-heart"></i>
+        <p style="margin-top: 20px; letter-spacing: 3px; font-size: 0.8rem; color: #888;">AŞK YÜKLENİYOR...</p>
+    </div>
+
+    <div class="music-player-container" id="musicBtn">
+        <div class="music-icon-wrapper">
+            <i class="fas fa-play" id="playIcon"></i>
+        </div>
+        <div class="music-info">
+            <span class="music-label">Bizim Şarkımız</span>
+            <span class="song-name">Yalın - Ki Sen</span>
+        </div>
+    </div>
+
+    <audio id="bgMusic" loop>
+        <source src="müzik.mp3" type="audio/mpeg">
+    </audio>
+
+    <header class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+            <p>Günümüz Kutlu Olsun Sevgilim</p>
+            <h1>Mesafe Sadece Bir Kelimeden İbaret</h1>
+            <p class="script-font" style="text-transform: none; margin-top: 10px;">Birlikte Sonsuza</p>
+        </div>
+    </header>
+
+    <section class="story-section">
+        <div class="story-container">
+            <div class="story-text reveal">
+                <h2 style="margin-bottom: 20px; color: var(--primary);">Nasıl Başladı?</h2>
+                <p>Her şey o ilk bakışla başladı. Zamanın durduğu, kalbimin ritminin değiştiği o an... Seninle tanışmak, hayatımın en güzel tesadüfü değil, en güzel mucizesiydi.</p>
+                <br>
+                <p>O günden beri her günüm seninle daha aydınlık. Birlikte güldük, birlikte büyüdük. Senin elini tuttuğum her an, evimde olduğumu hissediyorum.</p>
+            </div>
+            <div class="story-img reveal">
+                <img src="https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?w=500&auto=format&fit=crop" alt="Bizim Hikayemiz">
+            </div>
+        </div>
+    </section>
+
+    <section class="gallery-section">
+        <div class="section-header reveal">
+            <p class="script-font">Unutulmaz Anlar</p>
+            <h2>Birlikte Geçen Zaman</h2>
+        </div>
+        
+        <div class="gallery-grid">
+            
+            <div class="gallery-item reveal">
+                <div class="img-wrapper">
+                    <img src="biz.jpeg" alt="Anı 1">
+                </div>
+                <div class="gallery-caption">
+                    <span class="caption-title">Bazen Yağmurlu Bir Sonbahar</span>
+                    <p class="caption-text">Yapraklar dökülürken, bizim aşkımız yeniden çiçek açıyordu.</p>
+                </div>
+            </div>
+
+            <div class="gallery-item reveal">
+                <div class="img-wrapper">
+                    <img src="biz4.jpeg" alt="Anı 2">
+                </div>
+                <div class="gallery-caption">
+                    <span class="caption-title">Bazen Güneşli Bir Yaz </span>
+                    <p class="caption-text">O gün güneş bile bize bir başka doğmuştu, deniz gözlerin kadar güzeldi.</p>
+                </div>
+            </div>
+
+            <div class="gallery-item reveal">
+                <div class="img-wrapper">
+                    <img src="biz3.jpeg" alt="Anı 3">
+                </div>
+                <div class="gallery-caption">
+                    <span class="caption-title">Bazen Uykusuz Ve Yorgun</span>
+                    <p class="caption-text">Hangi şehirde olduğumuzun önemi yok, senin yanın benim evim.</p>
+                </div>
+            </div>
+
+            <div class="gallery-item reveal">
+                <div class="img-wrapper">
+                    <img src="biz11.jpeg" alt="Anı 4">
+                </div>
+                <div class="gallery-caption">
+                    <span class="caption-title">Seninle Her Yer</span>
+                    <p class="caption-text">Daha nice yıllara, ellerimiz hiç ayrılmasın sevgilim.</p>
+                </div>
+            </div>
+
+            <div class="gallery-item reveal">
+                <div class="img-wrapper">
+                    <img src="biz6.jpeg" alt="Anı 5">
+                </div>
+                <div class="gallery-caption">
+                    <span class="caption-title">Yıllar Geçerken </span>
+                    <p class="caption-text">Sevgimiz ilk günkü gibi sevgilim.</p>
+                </div>
+            </div>
+
+            <div class="gallery-item reveal">
+                <div class="img-wrapper">
+                    <img src="biz9.jpeg" alt="Anı 6">
+                </div>
+                <div class="gallery-caption">
+                    <span class="caption-title">Sadece Biz</span>
+                    <p class="caption-text">Gözlerin gözlerime değdiğinde zamanın bir önemi kalmıyor.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="messages-section">
+        <div class="section-header reveal">
+            <h2>Kalbimden Dökülenler</h2>
+        </div>
+        <div class="message-grid">
+            <div class="msg-box reveal">
+                <i class="fas fa-quote-left quote-icon"></i>
+                <p>"Senin sevgin, soğuk kış günlerinde içimi ısıtan tek güneş. Varlığınla hayatımı güzelleştirdiğin için teşekkür ederim."</p>
+                <p class="script-font" style="font-size: 1.5rem; margin-top: 15px;">- Abdullah</p>
+            </div>
+            <div class="msg-box reveal" style="transition-delay: 0.2s;">
+                <i class="fas fa-quote-left quote-icon"></i>
+                <p>"Kelimeler bazen yetersiz kalıyor ama bil ki; dünüm, bugünüm ve yarınım sensin. İyi ki varsın sevgilim."</p>
+                <p class="script-font" style="font-size: 1.5rem; margin-top: 15px;">- Sonsuzun</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="reveal">
+            <p style="letter-spacing: 5px; text-transform: uppercase; font-size: 0.9rem; margin-bottom: 20px;">Bizim Hikayemiz Hiç Bitmeyecek</p>
+            <h2>Sonsuza Kadar</h2>
+            <i class="fas fa-heart heart-end"></i>
+        </div>
+    </footer>
+
+    <script>
+        // --- Preloader ---
+        window.addEventListener('load', () => {
+            const preloader = document.getElementById('preloader');
+            preloader.style.opacity = '0';
+            setTimeout(() => preloader.style.display = 'none', 800);
+        });
+
+        // --- Scroll Animasyonları ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // --- Müzik Kontrol ---
+        const musicBtn = document.getElementById('musicBtn');
+        const audio = document.getElementById('bgMusic');
+        const playIcon = document.getElementById('playIcon');
+        const musicLabel = document.querySelector('.music-label');
+        let isPlaying = false;
+
+        musicBtn.addEventListener('click', () => {
+            if (!isPlaying) {
+                audio.play();
+                playIcon.classList.remove('fa-play');
+                playIcon.classList.add('fa-pause');
+                musicBtn.classList.add('playing');
+                musicLabel.innerText = "Şimdi Çalıyor...";
+            } else {
+                audio.pause();
+                playIcon.classList.remove('fa-pause');
+                playIcon.classList.add('fa-play');
+                musicBtn.classList.remove('playing');
+                musicLabel.innerText = "Müziği Başlat";
+            }
+            isPlaying = !isPlaying;
+        });
+    </script>
+</body>
+</html>
